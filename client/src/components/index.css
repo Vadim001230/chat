@@ -1,7 +1,8 @@
 :root {
   --input: #caced1;
-  --own-mess: #1D9BF0;
+  --own-mess: #bde5ff;
   --message: #F1EFF0;
+  --date: #706e6e;
 }
 
 .chat {
@@ -25,23 +26,76 @@
 .chat__messages {
   overflow-y: scroll;
   overflow-x: hidden;
-  max-height: 65vh;
+  height: 66vh;
+  display: flex;
+  flex-direction: column;
 }
 .chat__messages::-webkit-scrollbar {
-  width: 3px;               /* ширина всей полосы прокрутки */
+  width: 3px; /* ширина всей полосы прокрутки */
 }
 
 .chat__messages::-webkit-scrollbar-track {
-  background: transparent;        /* цвет зоны отслеживания */
+  background: transparent; /* цвет зоны отслеживания */
 }
 
 .chat__messages::-webkit-scrollbar-thumb {
-  background-color: var(--own-mess);    /* цвет бегунка */
-  border-radius: 30px;       /* округлось бегунка */
+  background-color: var(--own-mess); /* цвет бегунка */
+  border-radius: 30px; /* округлось бегунка */
 }
-.chat__message {
+
+.chat__message_info {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.chat__message,
+.chat__message_own {
+  width: fit-content;
   word-wrap: break-word;
-  padding: 3px;
+  background-color: var(--message);
+  padding: 0.5rem 1.5rem;
+  border-radius: 1.5rem;
+  max-width: 80%;
+  min-width: 30%;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat__message_own {
+  margin-right: 10px;
+  background-color: var(--own-mess);
+  align-self: flex-end;
+}
+
+.chat__message_username {
+  user-select: text;
+  font-weight: bold;
+}
+
+.chat__message_date {
+  font-size: 0.9rem;
+  color: var(--date);
+}
+
+.chat__message_text {
+  user-select: text;
+}
+
+.chat__message_conection {
+  user-select: text;
+  align-self: center;
+  margin-bottom: 1rem;
+  background-color: var(--message);
+  padding: 1rem 2rem;
+  border-radius: 2rem;
+}
+
+.chat__message_conection span {
+  font-weight: bold;
 }
 
 .chat__form {
@@ -60,6 +114,7 @@
   width: 90%;
   resize: none;
   font-family: inherit;
+  overflow: hidden;
 }
 
 .chat__form:focus-within,
@@ -129,7 +184,8 @@
 }
 
 .auth__btn:hover {
-  box-shadow: inset 0 0 0 1rem var(--own-mess);
+  box-shadow: inset 0 0 0 1rem #5bb6f3;
+  margin-left: auto;
   color: white;
 }
 
@@ -143,5 +199,9 @@
 @media (max-width: 425px) {
   .chat {
     width: 95vw;
+  }
+
+  .auth {
+    width: 300px;
   }
 }

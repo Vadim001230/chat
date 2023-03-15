@@ -1,6 +1,6 @@
 export default interface Message {
   event: string;
   username: string;
-  id: number;
+  id: string;
   message?: string;
 }
