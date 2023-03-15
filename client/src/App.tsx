@@ -1,4 +1,3 @@
-import './app.css';
 import Chat from './components/chat/chat';
 
 function App() {
