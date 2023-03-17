@@ -92,14 +92,17 @@ function Chat() {
   function sendMessage() {
     const message = {
       id: Date.now(),
-      message: value,
+      message: value.trim(),
       username,
       event: 'message',
     };
     if (socket.current && value.trim().length > 0) {
       socket.current.send(JSON.stringify(message));
+      console.log(JSON.stringify(message));
       setValue('');
       setNotEmptyMessage(false);
+      const textarea = textareaFocus.current as HTMLTextAreaElement;
+      textarea.rows = 1;
     }
   }
 
@@ -203,8 +206,15 @@ function Chat() {
               : setNotEmptyMessage(false);
           }}
           onKeyDown={(event) => {
-            if (event.key === 'Enter') {
+            const textarea = event.target as HTMLTextAreaElement;
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
               sendMessage();
+            } else if (
+              (event.key === 'Enter' && event.shiftKey && textarea.rows < 5) ||
+              (textarea.scrollHeight / 21 > textarea.rows && textarea.rows < 5) // 21 this textarea height 1 row
+            ) {
+              textarea.rows += 1;
             }
           }}
         />
@@ -221,11 +231,6 @@ function Chat() {
           className="chat__btn-submit"
           type="button"
           onClick={sendMessage}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              sendMessage();
-            }
-          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

@@ -85,6 +85,7 @@
 
 .chat__message_text {
   user-select: text;
+  white-space: pre-wrap;
 }
 
 .chat__message_conection {
@@ -206,11 +207,23 @@
     width: 80vw;
     min-height: 95vh;
   }
+
+  .chat__picker {
+    transform: scale(0.9);
+    right: 10px;
+    bottom: 7vh;
+  }
 }
 
 @media (max-width: 425px) {
   .chat {
     width: 95vw;
+  }
+
+  .chat__picker {
+    transform: scale(0.6);
+    right: -2.5rem;
+    bottom: -15px;
   }
 
   .auth {
