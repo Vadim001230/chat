@@ -3,9 +3,11 @@
   --own-mess: #bde5ff;
   --message: #F1EFF0;
   --date: #706e6e;
+  --thumb: #1D9BF0;
 }
 
 .chat {
+  position: relative;
   width: 60vw;
   min-height: 90vh;
   padding: 1rem;
@@ -39,7 +41,7 @@
 }
 
 .chat__messages::-webkit-scrollbar-thumb {
-  background-color: var(--own-mess); /* цвет бегунка */
+  background-color: var(--input); /* цвет бегунка */
   border-radius: 30px; /* округлось бегунка */
 }
 
@@ -140,6 +142,16 @@
   stroke: #9ea1a1;
   width: 21px;
   height: 21px;
+}
+
+.chat__picker {
+  position: absolute;
+  right: 30px;
+  bottom: 11vh;
+}
+
+.chat__btn-emoji {
+  cursor: pointer;
 }
 
 .auth {

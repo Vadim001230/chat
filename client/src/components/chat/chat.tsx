@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useEffect, useRef, useState } from 'react';
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 import IMessage from '../../types/IMessage';
 import transformDate from '../../utils/transformDate';
 // import Auth from '../auth/auth';
@@ -12,6 +14,7 @@ function Chat() {
   const [username, setUsername] = useState('');
   const [value, setValue] = useState('');
   const [notEmptyMessage, setNotEmptyMessage] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
   const messagesAutoScroll = useRef<HTMLDivElement>(null);
 
@@ -22,6 +25,26 @@ function Chat() {
   useEffect(() => {
     messagesAutoScroll.current?.scrollIntoView({ behavior: 'smooth' }); // scroll bottom after send message
   }, [messages]);
+
+  const clickCountRef = useRef(0);
+  useEffect(() => {
+    function handleClickOutsidePicker(event: MouseEvent) {
+      clickCountRef.current += 1;
+      const target = event.target as Element;
+      if (
+        clickCountRef.current > 1 &&
+        showPicker &&
+        !target.closest('.chat__picker')
+      ) {
+        setShowPicker(false);
+      }
+    }
+    document.addEventListener('click', handleClickOutsidePicker);
+    return () => {
+      document.removeEventListener('click', handleClickOutsidePicker);
+      clickCountRef.current = 0;
+    };
+  }, [showPicker]);
 
   function connect() {
     if (socket.current?.readyState === WebSocket.OPEN) {
@@ -115,6 +138,14 @@ function Chat() {
     );
   }
 
+  const handleEmojiSelect = (emoji: { native: string }) => {
+    setValue(value + emoji.native);
+    setNotEmptyMessage(true);
+  };
+  const handleTogglePicker = () => {
+    setShowPicker(!showPicker);
+  };
+
   return (
     <div className="chat">
       <h1 className="chat__title">Чат</h1>
@@ -153,6 +184,11 @@ function Chat() {
           )
         )}
       </div>
+
+      <div className="chat__picker">
+        {showPicker && <Picker data={data} onEmojiSelect={handleEmojiSelect} />}
+      </div>
+
       <form className="chat__form">
         <textarea
           ref={textareaFocus}
@@ -172,6 +208,15 @@ function Chat() {
             }
           }}
         />
+
+        <button
+          onClick={handleTogglePicker}
+          type="button"
+          className="chat__btn-emoji"
+        >
+          😀
+        </button>
+
         <button
           className="chat__btn-submit"
           type="button"
