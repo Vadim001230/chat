@@ -56,7 +56,6 @@ function Chat() {
       const message = {
         event: 'connection',
         username,
-        id: Date.now(),
       };
       if (socket.current && username.trim().length > 0) {
         setConnected(true);
@@ -91,14 +90,12 @@ function Chat() {
 
   function sendMessage() {
     const message = {
-      id: Date.now(),
-      message: value.trim(),
+      text: value.trim().toString(),
       username,
       event: 'message',
     };
     if (socket.current && value.trim().length > 0) {
       socket.current.send(JSON.stringify(message));
-      console.log(JSON.stringify(message));
       setValue('');
       setNotEmptyMessage(false);
       const textarea = textareaFocus.current as HTMLTextAreaElement;
@@ -179,10 +176,10 @@ function Chat() {
                     : mess.username}
                 </span>
                 <span className="chat__message_date">
-                  {String(transformDate(mess.id))}
+                  {String(transformDate(mess.createdAt))}
                 </span>
               </div>
-              <div className="chat__message_text">{mess.message}</div>
+              <div className="chat__message_text">{mess.text}</div>
             </div>
           )
         )}

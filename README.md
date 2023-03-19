@@ -1,2 +1,2 @@
 # chat
-react-express-chat
+react-express-websocket-chat

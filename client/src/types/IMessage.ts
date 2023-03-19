@@ -1,6 +1,7 @@
-export default interface Message {
-  event: string;
+export default interface IMessage {
+  id: number;
+  event: 'connection' | 'message';
   username: string;
-  id: string;
-  message?: string;
+  text: string;
+  createdAt: string;
 }
