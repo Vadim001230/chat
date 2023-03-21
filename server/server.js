@@ -4,7 +4,13 @@ const Message = require('./app/models/message.model');
 
 const wss = new ws.Server({ port: 5000 }, () => console.log('Server started on 5000'));
 
-const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/chat_postgres');
+const sequelize = new Sequelize('chat_postgres', 'postgres', 'postgres', {
+  dialect: 'postgres',
+  host: 'localhost',
+  define: {
+    timestamps: true
+  }
+});
 const initMessage = Message(sequelize, Sequelize);
 
 sequelize.sync()
@@ -32,8 +38,8 @@ async function broadcastMessage(message) {
 wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     try {
-      message = JSON.parse(message);
-      await broadcastMessage(message, ws);
+      const messageParse = JSON.parse(message);
+      await broadcastMessage(messageParse, ws);
     } catch (error) {
       console.error(`Error parsing message: ${error}`);
     }
@@ -55,28 +61,3 @@ process.on('SIGTERM', () => {
     });
   });
 });
-
-
-// wss.on('connection', async (ws) => {
-//   try {
-//     const messages = await initMessage.findAll({ order: [['createdAt', 'ASC']] });
-//     messages.forEach((message) => {
-//       ws.send(JSON.stringify(message));
-//     });
-//   } catch (error) {
-//     console.error(`Error retrieving messages from database: ${error}`);
-//   }
-
-//   ws.on('message', async (message) => {
-//     try {
-//       message = JSON.parse(message);
-//       await broadcastMessage(message, ws);
-//     } catch (error) {
-//       console.error(`Error parsing message: ${error}`);
-//     }
-//   });
-
-//   ws.on('close', () => {
-//     console.log('Connection closed');
-//   });
-// });
