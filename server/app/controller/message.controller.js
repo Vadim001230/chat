@@ -1,13 +1,6 @@
 const Message = require('../models/message.model');
 const Sequelize = require('sequelize');
-
-const sequelize = new Sequelize('chat_postgres', 'postgres', 'postgres', {
-  dialect: 'postgres',
-  host: 'localhost',
-  define: {
-    timestamps: true
-  }
-});
+const sequelize = require('../config/db');
 
 const initMessage = Message(sequelize, Sequelize);
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const ws = require('ws');
 const Sequelize = require('sequelize');
+const sequelize = require('./app/config/db');
 const Message = require('./app/models/message.model');
 const messageRouter = require('./app/routes/message.routes')
 const cors = require('cors');
@@ -16,13 +17,6 @@ app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 const wss = new ws.Server({ port: 5001 }, () => console.log('WebSocket server started on 5001'));
 
-const sequelize = new Sequelize('chat_postgres', 'postgres', 'postgres', {
-  dialect: 'postgres',
-  host: 'localhost',
-  define: {
-    timestamps: true
-  }
-});
 const initMessage = Message(sequelize, Sequelize);
 
 sequelize.sync()
