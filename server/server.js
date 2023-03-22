@@ -41,11 +41,25 @@ async function broadcastMessage(message) {
   });
 }
 
+// async broadcastMessage(message) {
+//   const { event, username, text } = message;
+//   try {
+//     const savedMessage = await this.createMessage({ body: { event, username, text } });
+//     this.wss.clients.forEach(client => {
+//       if (client.readyState === ws.OPEN) {
+//         client.send(JSON.stringify(savedMessage));
+//       }
+//     });
+//   } catch (error) {
+//     console.error(`Error creating message: ${error}`);
+//   }
+// }
+
 wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     try {
       const messageParse = JSON.parse(message);
-      await broadcastMessage(messageParse, ws);
+      await broadcastMessage(messageParse);
     } catch (error) {
       console.error(`Error parsing message: ${error}`);
     }

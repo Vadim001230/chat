@@ -7,7 +7,13 @@ const initMessage = Message(sequelize, Sequelize);
 class MessageController {
   async getMessages(req, res) {
     try {
-      const messages = await initMessage.findAll();
+      const limit = parseInt(req.query.limit) || 20;
+      const offset = parseInt(req.query.offset) || 0;
+      const messages = await initMessage.findAll({
+        limit,
+        offset,
+        order: [['createdAt', 'ASC']]
+      });
       res.json(messages);
     } catch (error) {
       console.error(`Error getting messages: ${error}`);
