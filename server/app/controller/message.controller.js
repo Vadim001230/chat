@@ -37,8 +37,7 @@ class MessageController {
   }
 
   async updateMessage(req, res) {
-    const id = req.params.id;
-    const { event, username, text } = req.body;
+    const { id, event, username, text } = req.body;
     try {
       await initMessage.update(
         { event, username, text },
