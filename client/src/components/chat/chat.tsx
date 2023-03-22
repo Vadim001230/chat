@@ -50,7 +50,7 @@ function Chat() {
     if (socket.current?.readyState === WebSocket.OPEN) {
       return;
     }
-    socket.current = new WebSocket('ws://localhost:5000'); // wss?
+    socket.current = new WebSocket('ws://localhost:5001'); // wss?
 
     socket.current.onopen = () => {
       const message = {
