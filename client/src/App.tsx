@@ -1,10 +1,12 @@
+import { Provider } from 'react-redux';
 import Chat from './components/chat/chat';
+import store from './redux/store';
 
 function App() {
   return (
-    <div className="App">
+    <Provider store={store}>
       <Chat />
-    </div>
+    </Provider>
   );
 }
 

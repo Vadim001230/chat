@@ -5,7 +5,6 @@ const store = configureStore({
   reducer: {
     [messageApi.reducerPath]: messageApi.reducer,
   },
-  middleware: (getDefaultMiddlware) =>
-    getDefaultMiddlware().concat(messageApi.middleware),
+  middleware: (getDefaultMiddlware) => getDefaultMiddlware().concat(messageApi.middleware),
 });
 export default store;

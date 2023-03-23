@@ -20,7 +20,5 @@ export default function transformDate(str: string) {
   let min = date.getMinutes().toString();
   min = +min < 10 ? `0${min}` : `${min}`;
 
-  return hour <= 24
-    ? `${hour}:${min}`
-    : `${hour}:${min} • ${months[month]} ${day}`;
+  return hour <= 24 ? `${hour}:${min}` : `${hour}:${min} • ${months[month]} ${day}`;
 }

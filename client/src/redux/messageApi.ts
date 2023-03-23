@@ -8,7 +8,7 @@ export const messageApi = createApi({
   endpoints: (build) => ({
     getMessages: build.query({
       query: ({ limit, offset }: { limit: number; offset: number }) =>
-        `messages?${limit && `limit=${limit}`}${offset && `&offset=${offset}`}`,
+        `messages?${limit && `limit=${limit}`}${`&offset=${offset}`}`,
       providesTags: ['Messages'],
     }),
     updateMessage: build.mutation({
@@ -29,8 +29,5 @@ export const messageApi = createApi({
   }),
 });
 
-export const {
-  useGetMessagesQuery,
-  useUpdateMessageMutation,
-  useDeleteMessageMutation,
-} = messageApi;
+export const { useGetMessagesQuery, useUpdateMessageMutation, useDeleteMessageMutation } =
+  messageApi;
