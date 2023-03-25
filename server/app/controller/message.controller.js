@@ -1,6 +1,8 @@
 const Message = require('../models/message.model');
 const Sequelize = require('sequelize');
 const sequelize = require('../config/db');
+const ws = require('ws');
+const wss = require('../config/ws');
 
 const initMessage = Message(sequelize, Sequelize);
 
@@ -12,37 +14,27 @@ class MessageController {
       const messages = await initMessage.findAll({
         limit,
         offset,
-        order: [['createdAt', 'ASC']]
+        order: [['createdAt', 'DESC']]
       });
-      res.json(messages);
+      res.json(messages.reverse());
     } catch (error) {
       console.error(`Error getting messages: ${error}`);
       res.status(500).json({ message: 'Server error' });
     }
   }
 
-  async createMessage(req, res) {
-    const { event, username, text } = req.body;
-    try {
-      const savedMessage = await initMessage.create({
-        event,
-        username,
-        text: text || null,
-      });
-      res.json(savedMessage);
-    } catch (error) {
-      console.error(`Error creating message: ${error}`);
-      res.status(500).json({ message: 'Server error' });
-    }
-  }
-
   async updateMessage(req, res) {
-    const { id, event, username, text } = req.body;
+    const { id, text } = req.body;
     try {
       await initMessage.update(
-        { event, username, text },
+        { text },
         { where: { id } }
       );
+      wss.clients.forEach(client => {
+        if (client.readyState === ws.OPEN) {
+          client.send(JSON.stringify({ event: 'update_message' }));
+        };
+      });
       res.json({ message: 'Message updated successfully' });
     } catch (error) {
       console.error(`Error updating message: ${error}`);
@@ -58,6 +50,11 @@ class MessageController {
         return res.status(404).json({ message: 'Message not found' });
       }
       await message.destroy();
+      wss.clients.forEach(client => {
+        if (client.readyState === ws.OPEN) {
+          client.send(JSON.stringify({ event: 'delete_message' })); //todo проверка на того кто удалил сообщение
+        };
+      });
       res.json({ message: 'Message deleted successfully' });
     } catch (error) {
       console.error(`Error deleting message: ${error}`);

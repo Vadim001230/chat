@@ -1,11 +1,11 @@
 const express = require('express');
 const ws = require('ws');
+const wss = require('./app/config/ws');
 const Sequelize = require('sequelize');
 const sequelize = require('./app/config/db');
 const Message = require('./app/models/message.model');
 const messageRouter = require('./app/routes/message.routes')
 const cors = require('cors');
-
 const PORT = process.env.PORT || 5000;
 const app = express();
 
@@ -14,8 +14,6 @@ app.use(express.json());
 app.use('/api', messageRouter);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-
-const wss = new ws.Server({ port: 5001 }, () => console.log('WebSocket server started on 5001'));
 
 const initMessage = Message(sequelize, Sequelize);
 
@@ -81,3 +79,5 @@ process.on('SIGTERM', () => {
     });
   });
 });
+
+module.exports = wss;

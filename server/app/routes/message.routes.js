@@ -3,7 +3,6 @@ const router = new Router;
 const messageController = require('../controller/message.controller');
 
 router.get('/messages', messageController.getMessages);
-router.post('/messages', messageController.createMessage);
 router.put('/messages', messageController.updateMessage);
 router.delete('/messages/:id', messageController.deleteMessage);
 
