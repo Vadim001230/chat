@@ -2,15 +2,18 @@
 import { useEffect, useRef, useState } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import { ReactComponent as SettingsIcon } from '../../UI/icons/settings.svg';
 import { ReactComponent as SendIcon } from '../../UI/icons/sendIcon.svg';
 import { ReactComponent as MesMenuIcon } from '../../UI/icons/MesMenuIcon.svg';
 import Spiner from '../../UI/spiner/spiner';
 import { useGetMessagesQuery } from '../../redux/messageApi';
 import IMessage from '../../types/IMessage';
 import transformDate from '../../utils/transformDate';
+import MessMenu from './messMenu';
+import ChatSettings from './chatSettings';
 // import Auth from '../auth/auth';
 import '../index.css';
-import MessMenu from './messMenu';
+
 
 function Chat() {
   const socket = useRef<WebSocket | undefined>();
@@ -19,12 +22,14 @@ function Chat() {
   const [username, setUsername] = useState('');
   const [value, setValue] = useState('');
   const [notEmptyMessage, setNotEmptyMessage] = useState(false);
+  const [showChatSettings, setShowChatSettings] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [showMessInfo, setShowMessInfo] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<number>(0);
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
   const messagesAutoScroll = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState(20);
+  const [offset, setOffset] = useState(0);
   const {
     data: messData,
     isLoading,
@@ -32,7 +37,7 @@ function Chat() {
     isFetching,
   } = useGetMessagesQuery({
     limit,
-    offset: 0,
+    offset,
   });
 
   useEffect(() => {
@@ -47,13 +52,16 @@ function Chat() {
 
   useEffect(() => {
     messagesAutoScroll.current?.scrollIntoView({ behavior: 'smooth' }); // scroll bottom after send message
-  }, [messages]);
+  }, [messages, limit]);
 
   const clickCountRef = useRef(0);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       clickCountRef.current += 1;
       const target = event.target as Element;
+      if (clickCountRef.current > 1 && showChatSettings && !target.closest('.chat__settings')) {
+        setShowChatSettings(false);
+      }
       if (clickCountRef.current > 1 && showPicker && !target.closest('.chat__picker')) {
         setShowPicker(false);
       }
@@ -66,7 +74,7 @@ function Chat() {
       document.removeEventListener('click', handleClickOutside);
       clickCountRef.current = 0;
     };
-  }, [showMessInfo, showPicker]);
+  }, [showChatSettings, showMessInfo, showPicker]);
 
   function connect() {
     if (socket.current?.readyState === WebSocket.OPEN) {
@@ -97,6 +105,7 @@ function Chat() {
       localStorage.removeItem('user');
       setConnected(false);
       socket.current = undefined;
+      setMessages([]);
     };
 
     socket.current.onerror = (err) => {
@@ -114,6 +123,7 @@ function Chat() {
     if (socket.current) {
       socket.current.send(JSON.stringify(message));
       socket.current.close();
+      setLimit((prevLimit) => prevLimit - 1); // удалить потом эту строчку
     }
   }
 
@@ -168,6 +178,9 @@ function Chat() {
     );
   }
 
+  const handleToggleChatSettings = () => {
+    setShowChatSettings(!showChatSettings);
+  };
   const handleEmojiSelect = (emoji: { native: string }) => {
     setValue(value + emoji.native);
     setNotEmptyMessage(true);
@@ -184,10 +197,13 @@ function Chat() {
 
   return (
     <div className="chat">
-      <h1 className="chat__title">Чат</h1>
-      <button onClick={disconnect} type="button" className="">
-        Disconnect
-      </button>
+      <div className="chat__info">
+        <h1 className="chat__title">Чат</h1>
+        <button onClick={handleToggleChatSettings} type="button" className="chat__btn-settings">
+          <SettingsIcon />
+          {showChatSettings && <ChatSettings onDisconnect={() => disconnect()} />}
+        </button>
+      </div>
       <div className="chat__messages">
         {messages.map((mess) =>
           // eslint-disable-next-line no-nested-ternary
