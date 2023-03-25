@@ -11,12 +11,13 @@ class MessageController {
     try {
       const limit = parseInt(req.query.limit) || 20;
       const offset = parseInt(req.query.offset) || 0;
-      const messages = await initMessage.findAll({
+      const messages  = await initMessage.findAll({
         limit,
         offset,
         order: [['createdAt', 'DESC']]
       });
-      res.json(messages.reverse());
+      const count = await initMessage.count();
+      res.json({messages: messages.reverse(), count});
     } catch (error) {
       console.error(`Error getting messages: ${error}`);
       res.status(500).json({ message: 'Server error' });

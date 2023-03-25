@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
   const Message = sequelize.define('messages', {
     event: {
-      type: Sequelize.ENUM('connection', 'message'),
+      type: Sequelize.ENUM('connection', 'message', 'disconnection'),
       allowNull: false,
     },
     username: {
