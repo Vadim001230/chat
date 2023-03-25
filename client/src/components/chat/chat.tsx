@@ -24,13 +24,14 @@ function Chat() {
   const [selectedMessageId, setSelectedMessageId] = useState<number>(0);
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
   const messagesAutoScroll = useRef<HTMLDivElement>(null);
+  const [limit, setLimit] = useState(20);
   const {
     data: messData,
     isLoading,
     error,
     isFetching,
   } = useGetMessagesQuery({
-    limit: 20,
+    limit,
     offset: 0,
   });
 
@@ -87,15 +88,12 @@ function Chat() {
 
     socket.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      message.event === 'delete_message' || message.event === 'update_message'
+        ? setLimit((prevLimit) => prevLimit + 1)
+        : setMessages((prevMessages) => [...prevMessages, message]);
     };
 
     socket.current.onclose = () => {
-      const message = {
-        event: 'disconnection',
-        username,
-      };
-      if (socket.current) socket.current.send(JSON.stringify(message));
       localStorage.removeItem('user');
       setConnected(false);
       socket.current = undefined;
@@ -106,6 +104,17 @@ function Chat() {
       socket.current = undefined;
       console.log(err);
     };
+  }
+
+  function disconnect() {
+    const message = {
+      event: 'disconnection',
+      username,
+    };
+    if (socket.current) {
+      socket.current.send(JSON.stringify(message));
+      socket.current.close();
+    }
   }
 
   function sendMessage() {
@@ -176,6 +185,9 @@ function Chat() {
   return (
     <div className="chat">
       <h1 className="chat__title">Чат</h1>
+      <button onClick={disconnect} type="button" className="">
+        Disconnect
+      </button>
       <div className="chat__messages">
         {messages.map((mess) =>
           // eslint-disable-next-line no-nested-ternary
