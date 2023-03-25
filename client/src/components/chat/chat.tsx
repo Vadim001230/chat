@@ -14,7 +14,6 @@ import ChatSettings from './chatSettings';
 // import Auth from '../auth/auth';
 import '../index.css';
 
-
 function Chat() {
   const socket = useRef<WebSocket | undefined>();
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -53,6 +52,16 @@ function Chat() {
   useEffect(() => {
     messagesAutoScroll.current?.scrollIntoView({ behavior: 'smooth' }); // scroll bottom after send message
   }, [messages, limit]);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
 
   const clickCountRef = useRef(0);
   useEffect(() => {
@@ -167,7 +176,9 @@ function Chat() {
             className="auth__btn"
             type="button"
             style={
-              username.trim().length > 0 ? { pointerEvents: 'auto' } : { pointerEvents: 'none' }
+              username.trim().length > 0
+                ? { pointerEvents: 'auto', backgroundColor: 'var(--thumb)', color: 'white' }
+                : { pointerEvents: 'none' }
             }
             onClick={connect}
           >
@@ -201,7 +212,9 @@ function Chat() {
         <h1 className="chat__title">Чат</h1>
         <button onClick={handleToggleChatSettings} type="button" className="chat__btn-settings">
           <SettingsIcon />
-          {showChatSettings && <ChatSettings onDisconnect={() => disconnect()} />}
+          {showChatSettings && (
+            <ChatSettings onDisconnect={() => disconnect()} onTheme={() => toggleTheme()} />
+          )}
         </button>
       </div>
       <div className="chat__messages">

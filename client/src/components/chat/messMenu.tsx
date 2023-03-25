@@ -23,9 +23,7 @@ export default function MessMenu({ id }: { id: number }) {
       <div
         onClick={handleDeleteMess}
         onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            handleDeleteMess();
-          }
+          if (event.key === 'Enter') handleDeleteMess();
         }}
         role="button"
         tabIndex={0}
@@ -39,9 +37,7 @@ export default function MessMenu({ id }: { id: number }) {
       <div
         onClick={handleUpdateMess}
         onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            handleUpdateMess();
-          }
+          if (event.key === 'Enter') handleUpdateMess();
         }}
         role="button"
         tabIndex={0}
