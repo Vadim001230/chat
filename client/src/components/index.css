@@ -1,10 +1,10 @@
 :root {
-  --white: #fff;
+  --white: #fafafa;
   --black: #000;
   --input: #caced1;
   --own-mess: #bde5ff;
   --disconnection: #f79b9b;
-  --message: #e9e7e7;
+  --message: #e7e4e4;
   --date: #706e6e;
   --thumb: #1D9BF0;
 }
@@ -88,14 +88,13 @@ h1, button, input {
 }
 
 .chat__messages {
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: auto;
   height: 66vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
 }
 .chat__messages::-webkit-scrollbar {
-  width: 3px; /* ширина всей полосы прокрутки */
+  width: 4px; /* ширина всей полосы прокрутки */
 }
 
 .chat__messages::-webkit-scrollbar-track {
@@ -120,7 +119,7 @@ h1, button, input {
   user-select: text;
   align-self: center;
   margin-bottom: 1rem;
-  padding: 0.5rem 1.5rem;
+  padding: 0.4rem 1.2rem;
   border-radius: 2rem;
 }
 .chat__message_connection {

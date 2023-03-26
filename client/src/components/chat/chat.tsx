@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { ReactComponent as SettingsIcon } from '../../UI/icons/settings.svg';
 import { ReactComponent as SendIcon } from '../../UI/icons/sendIcon.svg';
 import { ReactComponent as MesMenuIcon } from '../../UI/icons/MesMenuIcon.svg';
@@ -26,7 +27,7 @@ function Chat() {
   const [showMessInfo, setShowMessInfo] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<number>(0);
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
-  const messagesAutoScroll = useRef<HTMLDivElement>(null);
+  // const messagesAutoScroll = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const {
@@ -45,13 +46,18 @@ function Chat() {
 
   useEffect(() => {
     if (messData) {
-      setMessages(messData);
+      setMessages(messData.messages);
     }
   }, [messData]);
 
-  useEffect(() => {
-    messagesAutoScroll.current?.scrollIntoView({ behavior: 'smooth' }); // scroll bottom after send message
-  }, [messages, limit]);
+  const loadMoreMessages = () => {
+    setLimit((prev) => prev + 20); // to do сделать через offset
+  };
+
+  // useEffect(() => {
+  //   messagesAutoScroll.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }); // scroll bottom after send message
+  // }, [messages]);
+
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
@@ -107,7 +113,7 @@ function Chat() {
       const message = JSON.parse(event.data);
       message.event === 'delete_message' || message.event === 'update_message'
         ? setLimit((prevLimit) => prevLimit + 1)
-        : setMessages((prevMessages) => [...prevMessages, message]);
+        : setMessages((prevMessages) => [message, ...prevMessages]);
     };
 
     socket.current.onclose = () => {
@@ -217,45 +223,54 @@ function Chat() {
           )}
         </button>
       </div>
-      <div className="chat__messages">
-        {messages.map((mess) =>
-          // eslint-disable-next-line no-nested-ternary
-          mess.event === 'connection' ? (
-            <div className="chat__message_connection" key={mess.id} ref={messagesAutoScroll}>
-              Пользователь <span>{mess.username}</span> подключился
-            </div>
-          ) : mess.event === 'disconnection' ? (
-            <div className="chat__message_disconnection" key={mess.id} ref={messagesAutoScroll}>
-              Пользователь <span>{mess.username}</span> покинул чат
-            </div>
-          ) : (
-            <div
-              className={mess.username === ownUser ? 'chat__message_own' : 'chat__message'}
-              key={mess.id}
-              ref={messagesAutoScroll}
-            >
-              <div className="chat__message_info">
-                <span className="chat__message_username">
-                  {mess.username === ownUser ? 'Вы' : mess.username}
-                </span>
-                {mess.username === ownUser && (
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      onClick={() => handleToggleMessInfo(mess.id)}
-                      type="button"
-                      className="chat__btn-mes-menu"
-                    >
-                      <MesMenuIcon />
-                    </button>
-                    {showMessInfo && mess.id === selectedMessageId && <MessMenu id={mess.id} />}
-                  </div>
-                )}
+      <div className="chat__messages" id="scrollableDiv">
+        <InfiniteScroll
+          dataLength={messages.length}
+          next={loadMoreMessages}
+          hasMore={messages.length < messData?.count}
+          loader={(isFetching || isLoading) && <Spiner />}
+          className="chat__messages"
+          scrollableTarget="scrollableDiv"
+          inverse
+        >
+          {messages.map((mess) =>
+            // eslint-disable-next-line no-nested-ternary
+            mess.event === 'connection' ? (
+              <div className="chat__message_connection" key={mess.id}>
+                Пользователь <span>{mess.username}</span> подключился
               </div>
-              <div className="chat__message_text">{mess.text}</div>
-              <span className="chat__message_date">{String(transformDate(mess.createdAt))}</span>
-            </div>
-          )
-        )}
+            ) : mess.event === 'disconnection' ? (
+              <div className="chat__message_disconnection" key={mess.id}>
+                Пользователь <span>{mess.username}</span> покинул чат
+              </div>
+            ) : (
+              <div
+                className={mess.username === ownUser ? 'chat__message_own' : 'chat__message'}
+                key={mess.id}
+              >
+                <div className="chat__message_info">
+                  <span className="chat__message_username">
+                    {mess.username === ownUser ? 'Вы' : mess.username}
+                  </span>
+                  {mess.username === ownUser && (
+                    <div style={{ position: 'relative' }}>
+                      <button
+                        onClick={() => handleToggleMessInfo(mess.id)}
+                        type="button"
+                        className="chat__btn-mes-menu"
+                      >
+                        <MesMenuIcon />
+                      </button>
+                      {showMessInfo && mess.id === selectedMessageId && <MessMenu id={mess.id} />}
+                    </div>
+                  )}
+                </div>
+                <div className="chat__message_text">{mess.text}</div>
+                <span className="chat__message_date">{String(transformDate(mess.createdAt))}</span>
+              </div>
+            )
+          )}
+        </InfiniteScroll>
       </div>
 
       <div className="chat__picker">
