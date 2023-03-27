@@ -17,7 +17,7 @@ class MessageController {
         order: [['createdAt', 'DESC']]
       });
       const count = await initMessage.count();
-      res.json({messages: messages.reverse(), count});
+      res.json({messages: messages, count});
     } catch (error) {
       console.error(`Error getting messages: ${error}`);
       res.status(500).json({ message: 'Server error' });
