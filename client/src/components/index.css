@@ -1,12 +1,13 @@
 :root {
   --white: #fafafa;
   --black: #000;
-  --input: #caced1;
+  --input: #c2c6c9;
   --own-mess: #bde5ff;
   --disconnection: #f79b9b;
   --message: #e7e4e4;
   --date: #706e6e;
   --thumb: #1D9BF0;
+  --box-shadow: rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="dark"] {
@@ -17,6 +18,7 @@
   --own-mess: #2d76a7;
   --date: #d3cccc;
   --disconnection: #dd4c4c;
+  --box-shadow: rgba(255, 255, 255, 0.2);
 }
 
 body, textarea, input {
@@ -59,32 +61,51 @@ h1, button, input {
   height: 35px;
   position: relative;
 }
-.chat__btn-mes-menu {
+.chat__btn-mes-menu,
+.update-btn {
   width: 30px;
   height: 30px;
 }
+
+.cancel-icon {
+  stroke: #dd2f2f;
+  transition: all .2s;
+}
+
 .chat__btn-settings,
-.chat__btn-mes-menu {
-  cursor: pointer;
+.chat__btn-mes-menu,
+.update-btn {
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: box-shadow .2s;
 }
-.chat__btn-settings .settings-icon,
+.chat__btn-settings .settings-icon, .ok-icon,
 .chat__btn-mes-menu svg {
   stroke: var(--date);
   width: 27px;
   transition: stroke .2s;
 }
+.ok-icon, .cancel-icon {
+  width: 25px;
+}
+
 .chat__btn-settings:hover .settings-icon,
 .chat__btn-mes-menu:hover svg {
   stroke: var(--thumb);
 }
+.cancel-icon:hover,
+.ok-icon:hover {
+  stroke-width: 2.5;
+}
+.ok-icon:hover {
+  stroke: #3bee35;
+}
 .chat__btn-settings:hover,
-.chat__btn-mes-menu:hover {
-  box-shadow: inset 0 0 20px 0 rgba(100, 100, 100, 0.3);
+.chat__btn-mes-menu:hover,
+.update-btn:hover {
+  box-shadow: inset 0 0 20px 0 var(--box-shadow);
 }
 
 .chat__messages {
@@ -175,7 +196,7 @@ chat__message_disconnection span {
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  box-shadow: 0 2px 6px 4px var(--input);
+  box-shadow: 0 2px 6px 4px var(--box-shadow);
   border-radius: 10px;
   cursor: pointer;
 }
@@ -229,7 +250,6 @@ chat__message_disconnection span {
 
 .chat__message_date {
   align-self: flex-end;
-  line-height: 0.9rem;
   font-size: 0.9rem;
   color: var(--date);
 }
@@ -237,6 +257,42 @@ chat__message_disconnection span {
 .chat__message_text {
   user-select: text;
   white-space: pre-wrap;
+}
+
+.update__modal {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 40;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--box-shadow);
+}
+
+.chat__update-old-text {
+  align-self: flex-start;
+  padding: 0.5rem;
+  background-color: var(--white);
+  border-radius: 10px;
+  font-style: italic;
+  white-space: pre-wrap;
+  margin-bottom: 5px;
+  border: 1px solid var(--input);
+}
+
+.chat__update-old-text span {
+  margin-left: 5px;
+  font-style: normal;
+}
+
+.update__container {
+  width: 70%;
 }
 
 .chat__form {
@@ -248,6 +304,10 @@ chat__message_disconnection span {
   padding: 6px 10px;
   border-radius: 1rem;
   transition: box-shadow .2s;
+}
+
+.chat__update-form {
+  background-color: var(--white);
 }
 
 .chat__textarea {
@@ -271,7 +331,7 @@ chat__message_disconnection span {
 
 .chat__form:focus-within,
 .auth__input:focus {
-  box-shadow: 0 2px 5px 2px var(--input);
+  box-shadow: 0 2px 5px 2px var(--box-shadow);
 }
 
 .chat__textarea::placeholder {

@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { ReactComponent as LogOutIcon } from '../../UI/icons/logout.svg';
 import { ReactComponent as DarkIcon } from '../../UI/icons/darkIcon.svg';
 import { ReactComponent as LightIcon } from '../../UI/icons/LightIcon.svg';

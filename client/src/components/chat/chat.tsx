@@ -112,7 +112,7 @@ function Chat() {
     socket.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       message.event === 'delete_message' || message.event === 'update_message'
-        ? setLimit((prevLimit) => prevLimit + 1)
+        ? (setLimit((prevLimit) => prevLimit + 1), setShowMessInfo(false))
         : setMessages((prevMessages) => [message, ...prevMessages]);
     };
 
@@ -261,12 +261,19 @@ function Chat() {
                       >
                         <MesMenuIcon />
                       </button>
-                      {showMessInfo && mess.id === selectedMessageId && <MessMenu id={mess.id} />}
+                      {showMessInfo && mess.id === selectedMessageId && (
+                        <MessMenu id={mess.id} text={mess.text} />
+                      )}
                     </div>
                   )}
                 </div>
                 <div className="chat__message_text">{mess.text}</div>
-                <span className="chat__message_date">{String(transformDate(mess.createdAt))}</span>
+                <div className="chat__message_date">
+                  {new Date(mess.createdAt).getTime() !== new Date(mess.updatedAt).getTime() && (
+                    <span style={{ marginRight: '5px' }}>изменено</span>
+                  )}
+                  <span>{String(transformDate(mess.createdAt))}</span>
+                </div>
               </div>
             )
           )}
