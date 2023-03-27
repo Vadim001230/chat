@@ -27,7 +27,6 @@ function Chat() {
   const [showMessInfo, setShowMessInfo] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<number>(0);
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
-  // const messagesAutoScroll = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const {
@@ -49,12 +48,17 @@ function Chat() {
       setMessages(messData.messages);
     }
   }, [messData]);
-
+  useEffect(() => {
+    if (messData) {
+      setMessages(messData.messages);
+    }
+  }, [messData]);
   const loadMoreMessages = () => {
     setLimit((prev) => prev + 20); // to do сделать через offset
   };
 
   // useEffect(() => {
+  //   const messagesAutoScroll = useRef<HTMLDivElement>(null);
   //   messagesAutoScroll.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }); // scroll bottom after send message
   // }, [messages]);
 
