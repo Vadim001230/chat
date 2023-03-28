@@ -58,7 +58,7 @@ class AuthController {
         return res.status(400).json({message: `Invalid password`});
       }
       const token = jwt.sign({id: user.id}, secret, {expiresIn: '24h'});
-      return res.json({username: user.username, token});
+      return res.json({id: user.id, username: user.username, token});
     } catch (error) {
       console.error(`Error signin: ${error}`);
       res.status(400).json({message: 'Login error'});
