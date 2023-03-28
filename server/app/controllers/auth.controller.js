@@ -2,6 +2,7 @@ const UserModel = require('../models/user.model');
 const Sequelize = require('sequelize');
 const sequelize = require('../config/db');
 const bcrypt = require('bcryptjs');
+const {validationResult} = require('express-validator');
 
 const initUser = UserModel(sequelize, Sequelize);
 
@@ -22,17 +23,21 @@ class AuthController {
 
   async registration(req, res) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map(error => error.msg);
+        return res.status(400).json({message: 'Registration error', errors: errorMessages});
+      }
       const {username, password} = req.body;
       const candidate = await initUser.findOne({ where: { username } });
       if (candidate) {
-        res.status(400).json({message: 'User with the same name already exists'});
-      } else {
-        await initUser.create({
-          username,
-          password: bcrypt.hashSync(password, 7),
-        });
-        res.json({ message: 'User was registered successfully'});
+        return res.status(400).json({message: 'User with the same name already exists'});
       }
+      await initUser.create({
+        username,
+        password: bcrypt.hashSync(password, 7),
+      });
+      res.json({ message: 'User was registered successfully'});
     } catch (error) {
       console.error(`Error registration: ${error}`);
       res.status(400).json({message: 'Registration error'});
