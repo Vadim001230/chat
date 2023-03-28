@@ -2,7 +2,9 @@ const UserModel = require('../models/user.model');
 const Sequelize = require('sequelize');
 const sequelize = require('../config/db');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const {validationResult} = require('express-validator');
+const {secret} = require('../config/auth');
 
 const initUser = UserModel(sequelize, Sequelize);
 
@@ -35,7 +37,7 @@ class AuthController {
       }
       await initUser.create({
         username,
-        password: bcrypt.hashSync(password, 7),
+        password: await bcrypt.hash(password, 8),
       });
       res.json({ message: 'User was registered successfully'});
     } catch (error) {
@@ -46,7 +48,17 @@ class AuthController {
 
   async signin(req, res) {
     try {
-
+      const {username, password} = req.body;
+      const user = await initUser.findOne({ where: { username } });
+      if (!user) {
+        return res.status(400).json({message: `User ${username} not found`});
+      }
+      const isValidPassword = bcrypt.compareSync(password, user.password);
+      if (!isValidPassword) {
+        return res.status(400).json({message: `Invalid password`});
+      }
+      const token = jwt.sign({id: user.id}, secret, {expiresIn: '24h'});
+      return res.json({username: user.username, token});
     } catch (error) {
       console.error(`Error signin: ${error}`);
       res.status(400).json({message: 'Login error'});
