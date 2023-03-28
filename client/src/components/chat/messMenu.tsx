@@ -5,7 +5,6 @@ import { ReactComponent as DeleteIcon } from '../../UI/icons/deleteIcon.svg';
 import { ReactComponent as UpdateIcon } from '../../UI/icons/updateIcon.svg';
 import { ReactComponent as OkIcon } from '../../UI/icons/ok.svg';
 import { ReactComponent as CancelIcon } from '../../UI/icons/cancel.svg';
-import '../index.css';
 
 export default function MessMenu({ id, text }: { id: number; text: string | null }) {
   const [updatedMessage, setUpdatedMessage] = useState(text || '');

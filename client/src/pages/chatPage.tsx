@@ -3,19 +3,18 @@ import { useEffect, useRef, useState } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { ReactComponent as SettingsIcon } from '../../UI/icons/settings.svg';
-import { ReactComponent as SendIcon } from '../../UI/icons/sendIcon.svg';
-import { ReactComponent as MesMenuIcon } from '../../UI/icons/MesMenuIcon.svg';
-import Spiner from '../../UI/spiner/spiner';
-import { useGetMessagesQuery } from '../../redux/messageApi';
-import IMessage from '../../types/IMessage';
-import transformDate from '../../utils/transformDate';
-import MessMenu from './messMenu';
-import ChatSettings from './chatSettings';
-// import Auth from '../auth/auth';
+import { ReactComponent as SettingsIcon } from '../UI/icons/settings.svg';
+import { ReactComponent as SendIcon } from '../UI/icons/sendIcon.svg';
+import { ReactComponent as MesMenuIcon } from '../UI/icons/MesMenuIcon.svg';
+import Spiner from '../UI/spiner/spiner';
+import { useGetMessagesQuery } from '../redux/messageApi';
+import IMessage from '../types/IMessage';
+import transformDate from '../utils/transformDate';
+import MessMenu from '../components/chat/messMenu';
+import ChatSettings from '../components/chat/chatSettings';
 import '../index.css';
 
-function Chat() {
+export default function Chat() {
   const socket = useRef<WebSocket | undefined>();
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [connected, setConnected] = useState(false);
@@ -329,5 +328,3 @@ function Chat() {
     </div>
   );
 }
-
-export default Chat;
