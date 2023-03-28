@@ -1,10 +1,10 @@
-const Message = require('../models/message.model');
+const MessageModel = require('../models/message.model');
 const Sequelize = require('sequelize');
 const sequelize = require('../config/db');
 const ws = require('ws');
 const wss = require('../config/ws');
 
-const initMessage = Message(sequelize, Sequelize);
+const initMessage = MessageModel(sequelize, Sequelize);
 
 class MessageController {
   async getMessages(req, res) {

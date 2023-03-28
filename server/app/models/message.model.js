@@ -7,6 +7,7 @@ module.exports = (sequelize, Sequelize) => {
     username: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
     text: {
       type: Sequelize.TEXT,

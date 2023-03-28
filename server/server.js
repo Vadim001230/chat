@@ -3,19 +3,22 @@ const ws = require('ws');
 const wss = require('./app/config/ws');
 const Sequelize = require('sequelize');
 const sequelize = require('./app/config/db');
-const Message = require('./app/models/message.model');
-const messageRouter = require('./app/routes/message.routes')
+const MessageModel = require('./app/models/message.model');
+const messageRouter = require('./app/routes/message.routes');
+const authRouter = require('./app/routes/auth.routes');
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
 app.use('/api', messageRouter);
+app.use('/auth', authRouter);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
-const initMessage = Message(sequelize, Sequelize);
+const initMessage = MessageModel(sequelize, Sequelize);
 
 sequelize.sync()
   .then(() => console.log('Messages table has been created successfully.'))
@@ -38,20 +41,6 @@ async function broadcastMessage(message) {
     }
   });
 }
-
-// async broadcastMessage(message) {
-//   const { event, username, text } = message;
-//   try {
-//     const savedMessage = await this.createMessage({ body: { event, username, text } });
-//     this.wss.clients.forEach(client => {
-//       if (client.readyState === ws.OPEN) {
-//         client.send(JSON.stringify(savedMessage));
-//       }
-//     });
-//   } catch (error) {
-//     console.error(`Error creating message: ${error}`);
-//   }
-// }
 
 wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
