@@ -33,7 +33,7 @@ class AuthController {
       const {username, password} = req.body;
       const candidate = await initUser.findOne({ where: { username } });
       if (candidate) {
-        return res.status(400).json({message: 'Пользователь с таким именем уже существует'});
+        return res.status(400).json({message: 'User with the same name already exists'});
       }
       await initUser.create({
         username,

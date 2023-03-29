@@ -441,6 +441,17 @@ chat__message_disconnection span {
   pointer-events: none;
 }
 
+.registr__btn {
+  color: var(--thumb);
+  margin-top: 15px;
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+.registr__btn:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .chat {
     width: 80vw;

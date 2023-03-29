@@ -1,31 +1,32 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import { Link, useNavigate } from 'react-router-dom';
 import { ReactNode } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { useSigninMutation } from '../redux/authApi';
+import useAuth from '../hoc/useAuth';
 import { ReactComponent as ErrorIcon } from '../UI/icons/error.svg';
 import Preloader from '../UI/preloader/Preloader';
 
 export default function LoginPage() {
   const [signin, { data: userData, isLoading, isError, error }] = useSigninMutation();
-
+  const navigate = useNavigate();
+  const auth = useAuth();
+  console.log(auth);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid },
-  } = useForm({
-    mode: 'onBlur',
-  });
+  } = useForm({ mode: 'onBlur' });
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const { username, password } = data;
-    signin({ username, password }).unwrap();
-    reset();
+    await signin({ username, password }).unwrap();
+    reset({ password: '' });
+    if (userData) {
+      logIn(userData, () => navigate('/'));
+    }
   };
-
-  if (userData) {
-    localStorage.setItem('user', JSON.stringify(userData));
-  }
 
   return (
     <div className="auth">
@@ -87,6 +88,9 @@ export default function LoginPage() {
           </div>
         )}
 
+        <Link to="/registration" className="registr__btn">
+          Зарегистрироваться
+        </Link>
         <button className="auth__btn" type="submit" disabled={!isValid}>
           Войти
         </button>

@@ -163,40 +163,8 @@ export default function Chat() {
   if (error) {
     return <h1>Упс... что-то пошло не так</h1>;
   }
-  if (!connected) {
-    return (
-      <div className="auth">
-        <h1 className="auth__title">Чатик</h1>
-        <form className="auth__form">
-          <input
-            type="text"
-            placeholder="Введите имя"
-            className="auth__input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-                if (username.trim().length > 0) connect();
-              }
-            }}
-          />
-          <button
-            className="auth__btn"
-            type="button"
-            style={
-              username.trim().length > 0
-                ? { pointerEvents: 'auto', backgroundColor: 'var(--thumb)', color: 'white' }
-                : { pointerEvents: 'none' }
-            }
-            onClick={connect}
-          >
-            Войти
-          </button>
-        </form>
-      </div>
-    );
-  }
+
+  connect();
 
   const handleToggleChatSettings = () => {
     setShowChatSettings(!showChatSettings);
