@@ -1,9 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { ReactNode } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
+import { useSigninMutation } from '../redux/authApi';
 import { ReactComponent as ErrorIcon } from '../UI/icons/error.svg';
+import Preloader from '../UI/preloader/Preloader';
 
 export default function LoginPage() {
+  const [signin, { data: userData, isLoading, isError, error }] = useSigninMutation();
+
   const {
     register,
     handleSubmit,
@@ -14,8 +18,14 @@ export default function LoginPage() {
   });
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    const { username, password } = data;
+    signin({ username, password }).unwrap();
     reset();
   };
+
+  if (userData) {
+    localStorage.setItem('user', JSON.stringify(userData));
+  }
 
   return (
     <div className="auth">
@@ -67,7 +77,13 @@ export default function LoginPage() {
         {errors?.password && (
           <div className="auth__error">
             <ErrorIcon />
-            <span>{(errors?.password?.message as ReactNode) || 'Error password'}</span>
+            <span>{errors?.password?.message as ReactNode}</span>
+          </div>
+        )}
+        {isError && (
+          <div className="auth__error">
+            <ErrorIcon />
+            {error && <span>{error?.data?.message || 'Server error'}</span>}
           </div>
         )}
 
@@ -75,6 +91,8 @@ export default function LoginPage() {
           Войти
         </button>
       </form>
+
+      {isLoading && <Preloader />}
     </div>
   );
 }

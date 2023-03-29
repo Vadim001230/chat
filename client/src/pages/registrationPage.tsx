@@ -69,13 +69,13 @@ export default function RegistrationPage() {
         {errors?.password && (
           <div className="auth__error">
             <ErrorIcon />
-            <span>{(errors?.password?.message as ReactNode) || 'Error password'}</span>
+            <span>{errors?.password?.message as ReactNode}</span>
           </div>
         )}
         {isError && (
           <div className="auth__error">
             <ErrorIcon />
-            {error && error.data && <span>{error.data.message}</span>}
+            {error && <span>{error?.data?.message || 'Server error'}</span>}
           </div>
         )}
 
