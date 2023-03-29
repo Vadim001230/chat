@@ -13,8 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', messageRouter);
-app.use('/auth', authRouter);
+app.use('/api', messageRouter, authRouter);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 

@@ -366,7 +366,7 @@ chat__message_disconnection span {
 }
 
 .auth {
-  width: 400px;
+  width: 450px;
   padding: 1rem;
   margin: auto;
   border: 1px solid var(--input);
@@ -439,7 +439,6 @@ chat__message_disconnection span {
 .auth__btn:disabled {
   cursor: default;
   pointer-events: none;
-  border: 1px solid var(--input);
 }
 
 @media (max-width: 768px) {
@@ -468,5 +467,13 @@ chat__message_disconnection span {
 
   .auth {
     width: 300px;
+  }
+
+  .auth__input {
+    margin-bottom: 25px;
+  }
+
+  .auth__error {
+    font-size: 14px;
   }
 }

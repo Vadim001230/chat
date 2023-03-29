@@ -6,7 +6,7 @@ const {check} = require('express-validator');
 
 router.post('/registration', [
   check('username', 'Username field cannot be empty').notEmpty(),
-  check('password', 'Password must be more than 4 and less than 12 characters').isLength({min: 4, max: 12}),
+  check('password', 'Password must be more than 4 and less than 20 characters').isLength({min: 4, max: 20}),
 ], AuthController.registration);
 router.post('/login', AuthController.signin);
 router.get('/users', AuthMiddleware, AuthController.getUsers);

@@ -1,20 +1,22 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { ReactNode } from 'react';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
+import { useRegistrationMutation } from '../redux/authApi';
 import { ReactComponent as ErrorIcon } from '../UI/icons/error.svg';
+import Preloader from '../UI/preloader/Preloader';
 
 export default function RegistrationPage() {
+  const [signup, { isLoading, isError, error }] = useRegistrationMutation();
+
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isValid },
-  } = useForm({
-    mode: 'onBlur',
-  });
+  } = useForm({ mode: 'onBlur' });
 
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    reset();
+    const { username, password } = data;
+    signup({ username, password }).unwrap();
   };
 
   return (
@@ -23,17 +25,17 @@ export default function RegistrationPage() {
       <form className="auth__form" onSubmit={handleSubmit(onSubmit)}>
         <input
           type="text"
-          placeholder="Введите логин"
+          placeholder="Введите логин (имя пользователя)"
           className="auth__input"
           {...register('username', {
             required: 'Поле необходимо заполнить',
             maxLength: {
               value: 15,
-              message: 'Максимум 15 символов',
+              message: 'Логин может содержать максимум 15 символов',
             },
             pattern: {
               value: /^[^\s]+$/,
-              message: 'Поле не должно содержать пробелов',
+              message: 'Логин не должнен содержать пробелов',
             },
           })}
         />
@@ -52,15 +54,15 @@ export default function RegistrationPage() {
             required: 'Поле необходимо заполнить',
             minLength: {
               value: 4,
-              message: 'Минимум 4 символа',
+              message: 'Пароль должен содержать минимум 4 символа',
             },
             maxLength: {
-              value: 12,
-              message: 'Максимум 12 символов',
+              value: 20,
+              message: 'Пароль может содержать максимум 20 символов',
             },
             pattern: {
               value: /^[^\s]+$/,
-              message: 'Поле не должно содержать пробелов',
+              message: 'Пароль не должен содержать пробелов',
             },
           })}
         />
@@ -70,11 +72,19 @@ export default function RegistrationPage() {
             <span>{(errors?.password?.message as ReactNode) || 'Error password'}</span>
           </div>
         )}
+        {isError && (
+          <div className="auth__error">
+            <ErrorIcon />
+            {error && error.data && <span>{error.data.message}</span>}
+          </div>
+        )}
 
         <button className="auth__btn" type="submit" disabled={!isValid}>
           Войти
         </button>
       </form>
+
+      {isLoading && <Preloader />}
     </div>
   );
 }
