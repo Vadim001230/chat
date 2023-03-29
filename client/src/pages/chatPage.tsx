@@ -166,7 +166,7 @@ export default function Chat() {
   if (!connected) {
     return (
       <div className="auth">
-        <h1 className="auth__title">Чат</h1>
+        <h1 className="auth__title">Чатик</h1>
         <form className="auth__form">
           <input
             type="text"

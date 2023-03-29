@@ -2,6 +2,7 @@
   --white: #fafafa;
   --black: #000;
   --input: #c2c6c9;
+  --red: #dd2f2f;
   --own-mess: #bde5ff;
   --disconnection: #f79b9b;
   --message: #e7e4e4;
@@ -68,7 +69,7 @@ h1, button, input {
 }
 
 .cancel-icon {
-  stroke: #dd2f2f;
+  stroke: var(--red);
   transition: all .2s;
 }
 
@@ -366,22 +367,23 @@ chat__message_disconnection span {
 
 .auth {
   width: 400px;
-  height: 180px;
   padding: 1rem;
   margin: auto;
   border: 1px solid var(--input);
   border-radius: 1rem;
-  margin-top: calc(50vh - 90px);
+  margin-top: 25vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+.auth__title {
+  align-self: center;
+}
+
 .auth__form {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
 }
 
 .auth__input {
@@ -391,9 +393,32 @@ chat__message_disconnection span {
   width: 100%;
   font-family: inherit;
   border: 1px solid var(--input);
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 1rem;
   transition: box-shadow .2s;
+  margin-bottom: 15px;
+}
+.auth__input:first-child {
+  margin-top: 20px;
+}
+
+.auth__error {
+  margin-bottom: 15px;
+  margin-top: -10px;
+  display: flex;
+  align-items: center;
+  height: 1.6rem;
+}
+
+.auth__error span {
+  color: var(--red);
+  margin-bottom: 5px;
+}
+
+.error-icon {
+  width: 20px;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .auth__btn {
@@ -401,14 +426,20 @@ chat__message_disconnection span {
   border: 1px solid var(--input);
   border-radius: 1rem;
   cursor: pointer;
+  margin-top: 15px;
+  margin-left: auto;
   transition: all .2s;
-  margin-top: 20px;
 }
 
 .auth__btn:hover {
   background-color: var(--thumb);
-  margin-left: auto;
   color: white;
+}
+
+.auth__btn:disabled {
+  cursor: default;
+  pointer-events: none;
+  border: 1px solid var(--input);
 }
 
 @media (max-width: 768px) {
