@@ -408,6 +408,7 @@ chat__message_disconnection span {
   display: flex;
   align-items: center;
   height: 1.6rem;
+  width: 100%;
 }
 
 .auth__error span {

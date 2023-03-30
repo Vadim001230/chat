@@ -10,8 +10,8 @@ import Preloader from '../UI/preloader/Preloader';
 export default function LoginPage() {
   const [signin, { data: userData, isLoading, isError, error }] = useSigninMutation();
   const navigate = useNavigate();
-  const auth = useAuth();
-  console.log(auth);
+  const { logIn } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -23,10 +23,11 @@ export default function LoginPage() {
     const { username, password } = data;
     await signin({ username, password }).unwrap();
     reset({ password: '' });
-    if (userData) {
-      logIn(userData, () => navigate('/'));
-    }
   };
+
+  if (userData) {
+    logIn(userData, () => navigate('/'));
+  }
 
   return (
     <div className="auth">

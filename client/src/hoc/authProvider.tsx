@@ -1,13 +1,8 @@
 import { createContext, useState, ReactNode, useMemo } from 'react';
 import IUser from '../types/IUser';
+import AuthContextType from '../types/AuthContextType';
 
-type Context = {
-  logIn: (userData: IUser) => void;
-  logOut: () => void;
-  user: IUser;
-};
-
-export const AuthContext = createContext<Context | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const storage = localStorage.getItem('user');

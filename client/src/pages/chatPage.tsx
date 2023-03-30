@@ -17,7 +17,7 @@ import '../index.css';
 export default function Chat() {
   const socket = useRef<WebSocket | undefined>();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(true);
   const [username, setUsername] = useState('');
   const [value, setValue] = useState('');
   const [notEmptyMessage, setNotEmptyMessage] = useState(false);
@@ -47,19 +47,10 @@ export default function Chat() {
       setMessages(messData.messages);
     }
   }, [messData]);
-  useEffect(() => {
-    if (messData) {
-      setMessages(messData.messages);
-    }
-  }, [messData]);
+
   const loadMoreMessages = () => {
     setLimit((prev) => prev + 20); // to do сделать через offset
   };
-
-  // useEffect(() => {
-  //   const messagesAutoScroll = useRef<HTMLDivElement>(null);
-  //   messagesAutoScroll.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }); // scroll bottom after send message
-  // }, [messages]);
 
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
@@ -129,7 +120,6 @@ export default function Chat() {
     socket.current.onerror = (err) => {
       setConnected(false);
       socket.current = undefined;
-      console.log(err);
     };
   }
 
@@ -264,7 +254,7 @@ export default function Chat() {
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
-            e.target.value.trim().length > 0 ? setNotEmptyMessage(true) : setNotEmptyMessage(false);
+            setNotEmptyMessage(e.target.value.trim().length > 0);
           }}
           onKeyDown={(event) => {
             const textarea = event.target as HTMLTextAreaElement;
