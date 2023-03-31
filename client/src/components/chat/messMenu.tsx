@@ -9,9 +9,8 @@ import { ReactComponent as CancelIcon } from '../../UI/icons/cancel.svg';
 export default function MessMenu({ id, text }: { id: number; text: string | null }) {
   const [updatedMessage, setUpdatedMessage] = useState(text || '');
   const [showUpdatedMessage, setShowUpdatedMessage] = useState(false);
-  const [deleteMess, { isLoading, isError }] = useDeleteMessageMutation();
-  const [updateMess, { isLoading: isLoadingUpdate, isError: isErrorUpdate }] =
-    useUpdateMessageMutation();
+  const [deleteMess, { isLoading }] = useDeleteMessageMutation();
+  const [updateMess, { isLoading: isLoadingUpdate }] = useUpdateMessageMutation();
 
   const handleDeleteMess = async () => {
     await deleteMess({ id }).unwrap();
@@ -58,11 +57,11 @@ export default function MessMenu({ id, text }: { id: number; text: string | null
 
       {showUpdatedMessage && (
         <div className="update__modal">
-          <div className="update__container">
-            <div className="chat__update-old-text">
+          <div className="update__modal-container">
+            <div className="update__modal-old-text">
               Изменить сообщение: <span>{text}</span>
             </div>
-            <form className="chat__update-form chat__form">
+            <form className="update__modal-form chat__form">
               <textarea
                 className="chat__textarea"
                 rows={1}
@@ -84,7 +83,7 @@ export default function MessMenu({ id, text }: { id: number; text: string | null
                   }
                 }}
               />
-              <button className="update-btn" type="button" onClick={handleUpdateMess}>
+              <button className="update__modal-btn" type="button" onClick={handleUpdateMess}>
                 <OkIcon
                   style={
                     text !== updatedMessage && updatedMessage.trim().length > 0
@@ -94,7 +93,7 @@ export default function MessMenu({ id, text }: { id: number; text: string | null
                 />
               </button>
               <button
-                className="update-btn"
+                className="update__modal-btn"
                 type="button"
                 onClick={() => setShowUpdatedMessage(false)}
               >

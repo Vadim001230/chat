@@ -8,7 +8,7 @@
   --message: #e7e4e4;
   --date: #706e6e;
   --thumb: #1D9BF0;
-  --box-shadow: rgba(0, 0, 0, 0.2);
+  --box-shadow: rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] {
@@ -19,7 +19,7 @@
   --own-mess: #2d76a7;
   --date: #d3cccc;
   --disconnection: #dd4c4c;
-  --box-shadow: rgba(255, 255, 255, 0.2);
+  --box-shadow: rgba(255, 255, 255, 0.25);
 }
 
 body, textarea, input {
@@ -38,7 +38,7 @@ h1, button, input {
   padding: 1rem;
   margin: auto;
   border: 1px solid var(--input);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   margin-top: 5vh;
   display: flex;
   flex-direction: column;
@@ -52,7 +52,16 @@ h1, button, input {
 
 .chat__title,
 .auth__title {
-  font-size: 24px;
+  font-size: 1.5rem;
+}
+
+.chat__users-title {
+  transition: color .2s;
+  cursor: pointer;
+}
+.chat__users-title:hover {
+  color: var(--thumb);
+  text-decoration: underline;
 }
 
 .chat__info {
@@ -68,7 +77,8 @@ h1, button, input {
   position: relative;
 }
 .chat__btn-mes-menu,
-.update-btn {
+.update__modal-btn,
+.users__modal-btn {
   width: 30px;
   height: 30px;
 }
@@ -80,13 +90,16 @@ h1, button, input {
 
 .chat__btn-settings,
 .chat__btn-mes-menu,
-.update-btn {
+.update__modal-btn,
+.users__modal-btn {
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none;
   transition: box-shadow .2s;
 }
+
 .chat__btn-settings .settings-icon, .ok-icon,
 .chat__btn-mes-menu svg {
   stroke: var(--date);
@@ -110,7 +123,8 @@ h1, button, input {
 }
 .chat__btn-settings:hover,
 .chat__btn-mes-menu:hover,
-.update-btn:hover {
+.update__modal-btn:hover,
+.users__modal-btn:hover {
   box-shadow: inset 0 0 20px 0 var(--box-shadow);
 }
 
@@ -120,15 +134,18 @@ h1, button, input {
   display: flex;
   flex-direction: column-reverse;
 }
-.chat__messages::-webkit-scrollbar {
+.chat__messages::-webkit-scrollbar,
+.users__modal-container::-webkit-scrollbar {
   width: 4px; /* ширина всей полосы прокрутки */
 }
 
-.chat__messages::-webkit-scrollbar-track {
+.chat__messages::-webkit-scrollbar-track,
+.users__modal-container::-webkit-scrollbar-track {
   background: transparent; /* цвет зоны отслеживания */
 }
 
-.chat__messages::-webkit-scrollbar-thumb {
+.chat__messages::-webkit-scrollbar-thumb,
+.users__modal-container::-webkit-scrollbar-thumb {
   background-color: var(--input); /* цвет бегунка */
   border-radius: 30px; /* округлось бегунка */
 }
@@ -270,7 +287,8 @@ h1, button, input {
   white-space: pre-wrap;
 }
 
-.update__modal {
+.update__modal,
+.users__modal {
   position: fixed;
   display: flex;
   justify-content: center;
@@ -286,7 +304,7 @@ h1, button, input {
   background-color: var(--box-shadow);
 }
 
-.chat__update-old-text {
+.update__modal-old-text {
   align-self: flex-start;
   padding: 0.5rem;
   background-color: var(--white);
@@ -297,13 +315,44 @@ h1, button, input {
   border: 1px solid var(--input);
 }
 
-.chat__update-old-text span {
+.update__modal-old-text span {
   margin-left: 5px;
   font-style: normal;
 }
 
-.update__container {
-  width: 70%;
+.update__modal-container,
+.users__modal-container {
+  width: 50%;
+}
+
+.users__modal-container {
+  border-radius: 0.5rem;
+  background-color: var(--white);
+  overflow-y: auto;
+  padding: 1rem;
+  max-height: 80vh;
+}
+
+.users__modal-user {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  justify-items: stretch;
+}
+
+.users__modal-user span:first-child {
+  font-weight: bold;
+}
+.users__modal-user span:last-child {
+  color: var(--date);
+  justify-self: flex-end;
+  margin-right: 0.5rem;
+}
+
+.users__modal-btn {
+  margin-left: auto;
+  margin-top: -0.2rem;
 }
 
 .chat__form {
@@ -312,13 +361,10 @@ h1, button, input {
   align-items: center;
   justify-content: space-between;
   border: 1px solid var(--input);
+  background-color: var(--white);
   padding: 6px 10px;
   border-radius: 1rem;
   transition: box-shadow .2s;
-}
-
-.chat__update-form {
-  background-color: var(--white);
 }
 
 .chat__textarea {
@@ -474,11 +520,17 @@ h1, button, input {
     right: 10px;
     bottom: 7vh;
   }
+
+  .update__modal-container,
+  .users__modal-container {
+  width: 70%;
+  }
 }
 
 @media (max-width: 425px) {
   .chat {
-    width: 95vw;
+    width: 99vw;
+    height: 97vh;
   }
 
   .chat__picker {
@@ -499,7 +551,8 @@ h1, button, input {
     font-size: 14px;
   }
 
-  .update__container {
+  .update__modal-container,
+  .users__modal-container {
     width: 90%;
   }
 }

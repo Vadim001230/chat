@@ -1,23 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import useAuth from '../hoc/useAuth';
+import { useGetMessagesQuery } from '../redux/messageApi';
 import { ReactComponent as SettingsIcon } from '../UI/icons/settings.svg';
 import { ReactComponent as SendIcon } from '../UI/icons/sendIcon.svg';
 import { ReactComponent as MesMenuIcon } from '../UI/icons/MesMenuIcon.svg';
 import Spiner from '../UI/spiner/spiner';
-import { useGetMessagesQuery } from '../redux/messageApi';
 import IMessage from '../types/IMessage';
 import transformDate from '../utils/transformDate';
 import MessMenu from '../components/chat/messMenu';
 import ChatSettings from '../components/chat/chatSettings';
+import ChatUsers from '../components/chat/chatUsers';
 import '../index.css';
 
 export default function Chat() {
   const socket = useRef<WebSocket | undefined>();
   const { user, logOut } = useAuth();
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [value, setValue] = useState('');
   const [notEmptyMessage, setNotEmptyMessage] = useState(false);
@@ -28,12 +29,11 @@ export default function Chat() {
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
   const {
     data: messData,
     isLoading,
-    error,
+    isError,
     isFetching,
   } = useGetMessagesQuery({
     limit,
@@ -97,9 +97,12 @@ export default function Chat() {
 
     socket.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      message.event === 'delete_message' || message.event === 'update_message'
-        ? (setLimit((prevLimit) => prevLimit + 1), setShowMessInfo(false))
-        : setMessages((prevMessages) => [message, ...prevMessages]);
+      if (message.event === 'delete_message' || message.event === 'update_message') {
+        setLimit((prevLimit) => prevLimit + 1);
+        setShowMessInfo(false);
+      } else {
+        setMessages((prevMessages) => [message, ...prevMessages]);
+      }
     };
 
     socket.current.onclose = () => {
@@ -158,14 +161,15 @@ export default function Chat() {
     setShowMessInfo(!showMessInfo);
   };
 
-  if (error) {
+  if (isError) {
     return <h1 className="chat__error">Упс... что-то пошло не так</h1>;
   }
 
   return (
     <div className="chat">
       <div className="chat__info">
-        <h1 className="chat__title">Чат</h1>
+        <h1 className="chat__title">Чатик</h1>
+        <ChatUsers />
         <button
           onClick={() => setShowChatSettings(!showChatSettings)}
           type="button"

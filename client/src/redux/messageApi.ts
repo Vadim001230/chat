@@ -13,7 +13,7 @@ export const messageApi = createApi({
     }),
     updateMessage: build.mutation({
       query: (body) => ({
-        url: `messages`,
+        url: 'messages',
         method: 'PUT',
         body,
       }),

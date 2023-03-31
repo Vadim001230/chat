@@ -7,19 +7,28 @@ export const authApi = createApi({
   endpoints: (build) => ({
     registration: build.mutation({
       query: (body) => ({
-        url: `registration`,
+        url: 'registration',
         method: 'POST',
         body,
       }),
     }),
     signin: build.mutation({
       query: (body) => ({
-        url: `login`,
+        url: 'login',
         method: 'POST',
         body,
+      }),
+    }),
+    getUsers: build.query({
+      query: (token: string) => ({
+        url: 'users',
+        method: 'GET',
+        headers: {
+          'x-access-token': token,
+        },
       }),
     }),
   }),
 });
 
-export const { useRegistrationMutation, useSigninMutation } = authApi;
+export const { useRegistrationMutation, useSigninMutation, useGetUsersQuery } = authApi;

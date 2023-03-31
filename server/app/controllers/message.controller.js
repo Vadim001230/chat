@@ -53,7 +53,7 @@ class MessageController {
       await message.destroy();
       wss.clients.forEach(client => {
         if (client.readyState === ws.OPEN) {
-          client.send(JSON.stringify({ event: 'delete_message' })); //todo проверка на того кто удалил сообщение
+          client.send(JSON.stringify({ event: 'delete_message' }));
         };
       });
       res.json({ message: 'Message deleted successfully' });
