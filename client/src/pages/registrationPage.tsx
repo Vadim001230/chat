@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { useRegistrationMutation } from '../redux/authApi';
 import { ReactComponent as ErrorIcon } from '../UI/icons/error.svg';
@@ -82,8 +82,11 @@ export default function RegistrationPage() {
           </div>
         )}
 
+        <Link to="/login" className="registr__btn">
+          Есть аккаунт
+        </Link>
         <button className="auth__btn" type="submit" disabled={!isValid}>
-          Войти
+          Зарегестрироваться
         </button>
       </form>
 

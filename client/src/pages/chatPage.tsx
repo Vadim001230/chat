@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import useAuth from '../hoc/useAuth';
 import { ReactComponent as SettingsIcon } from '../UI/icons/settings.svg';
 import { ReactComponent as SendIcon } from '../UI/icons/sendIcon.svg';
 import { ReactComponent as MesMenuIcon } from '../UI/icons/MesMenuIcon.svg';
@@ -16,9 +17,8 @@ import '../index.css';
 
 export default function Chat() {
   const socket = useRef<WebSocket | undefined>();
+  const { user, logOut } = useAuth();
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [connected, setConnected] = useState(true);
-  const [username, setUsername] = useState('');
   const [value, setValue] = useState('');
   const [notEmptyMessage, setNotEmptyMessage] = useState(false);
   const [showChatSettings, setShowChatSettings] = useState(false);
@@ -28,6 +28,8 @@ export default function Chat() {
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
   const {
     data: messData,
     isLoading,
@@ -40,19 +42,11 @@ export default function Chat() {
 
   useEffect(() => {
     textareaFocus.current?.focus();
-  }, [connected]);
-
-  useEffect(() => {
-    if (messData) {
-      setMessages(messData.messages);
-    }
-  }, [messData]);
+  }, []);
 
   const loadMoreMessages = () => {
     setLimit((prev) => prev + 20); // to do сделать через offset
   };
-
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -85,21 +79,19 @@ export default function Chat() {
     };
   }, [showChatSettings, showMessInfo, showPicker]);
 
-  function connect() {
+  const connect = useCallback(() => {
     if (socket.current?.readyState === WebSocket.OPEN) {
       return;
     }
-    socket.current = new WebSocket('ws://localhost:5001'); // wss?
+    socket.current = new WebSocket('ws://localhost:5001');
 
     socket.current.onopen = () => {
       const message = {
         event: 'connection',
-        username,
+        username: user?.username,
       };
-      if (socket.current && username.trim().length > 0) {
-        setConnected(true);
+      if (socket.current) {
         socket.current.send(JSON.stringify(message));
-        localStorage.setItem('user', username);
       }
     };
 
@@ -111,34 +103,40 @@ export default function Chat() {
     };
 
     socket.current.onclose = () => {
-      localStorage.removeItem('user');
-      setConnected(false);
       socket.current = undefined;
       setMessages([]);
     };
 
-    socket.current.onerror = (err) => {
-      setConnected(false);
+    socket.current.onerror = () => {
       socket.current = undefined;
     };
-  }
+  }, [setLimit, setShowMessInfo, setMessages, user]);
+
+  useEffect(() => {
+    if (!socket.current) connect();
+  });
+  useEffect(() => {
+    if (messData) {
+      setMessages(messData.messages);
+    }
+  }, [connect, messData]);
 
   function disconnect() {
     const message = {
       event: 'disconnection',
-      username,
+      username: user?.username,
     };
     if (socket.current) {
       socket.current.send(JSON.stringify(message));
       socket.current.close();
-      setLimit((prevLimit) => prevLimit - 1); // удалить потом эту строчку
+      logOut();
     }
   }
 
   function sendMessage() {
     const message = {
       text: value.trim().toString(),
-      username,
+      username: user?.username,
       event: 'message',
     };
     if (socket.current && value.trim().length > 0) {
@@ -150,34 +148,29 @@ export default function Chat() {
       textarea.style.height = '21px';
     }
   }
-  if (error) {
-    return <h1>Упс... что-то пошло не так</h1>;
-  }
 
-  connect();
-
-  const handleToggleChatSettings = () => {
-    setShowChatSettings(!showChatSettings);
-  };
   const handleEmojiSelect = (emoji: { native: string }) => {
     setValue(value + emoji.native);
     setNotEmptyMessage(true);
-  };
-  const handleTogglePicker = () => {
-    setShowPicker(!showPicker);
   };
   const handleToggleMessInfo = (id: number) => {
     setSelectedMessageId(id);
     setShowMessInfo(!showMessInfo);
   };
 
-  const ownUser = localStorage.getItem('user');
+  if (error) {
+    return <h1 className="chat__error">Упс... что-то пошло не так</h1>;
+  }
 
   return (
     <div className="chat">
       <div className="chat__info">
         <h1 className="chat__title">Чат</h1>
-        <button onClick={handleToggleChatSettings} type="button" className="chat__btn-settings">
+        <button
+          onClick={() => setShowChatSettings(!showChatSettings)}
+          type="button"
+          className="chat__btn-settings"
+        >
           <SettingsIcon />
           {showChatSettings && (
             <ChatSettings onDisconnect={() => disconnect()} onTheme={() => toggleTheme()} />
@@ -194,50 +187,57 @@ export default function Chat() {
           scrollableTarget="scrollableDiv"
           inverse
         >
-          {messages.map((mess) =>
-            // eslint-disable-next-line no-nested-ternary
-            mess.event === 'connection' ? (
-              <div className="chat__message_connection" key={mess.id}>
-                Пользователь <span>{mess.username}</span> подключился
-              </div>
-            ) : mess.event === 'disconnection' ? (
-              <div className="chat__message_disconnection" key={mess.id}>
-                Пользователь <span>{mess.username}</span> покинул чат
-              </div>
-            ) : (
-              <div
-                className={mess.username === ownUser ? 'chat__message_own' : 'chat__message'}
-                key={mess.id}
-              >
-                <div className="chat__message_info">
-                  <span className="chat__message_username">
-                    {mess.username === ownUser ? 'Вы' : mess.username}
-                  </span>
-                  {mess.username === ownUser && (
-                    <div style={{ position: 'relative' }}>
-                      <button
-                        onClick={() => handleToggleMessInfo(mess.id)}
-                        type="button"
-                        className="chat__btn-mes-menu"
-                      >
-                        <MesMenuIcon />
-                      </button>
-                      {showMessInfo && mess.id === selectedMessageId && (
-                        <MessMenu id={mess.id} text={mess.text} />
+          {messages.map((mess) => {
+            switch (mess.event) {
+              case 'connection':
+                return (
+                  <div className="chat__message_connection" key={mess.id}>
+                    Пользователь <span>{mess.username}</span> подключился
+                  </div>
+                );
+              case 'disconnection':
+                return (
+                  <div className="chat__message_disconnection" key={mess.id}>
+                    Пользователь <span>{mess.username}</span> покинул чат
+                  </div>
+                );
+              default:
+                return (
+                  <div
+                    className={
+                      mess.username === user?.username ? 'chat__message_own' : 'chat__message'
+                    }
+                    key={mess.id}
+                  >
+                    <div className="chat__message_info">
+                      <span className="chat__message_username">
+                        {mess.username === user?.username ? 'Вы' : mess.username}
+                      </span>
+                      {mess.username === user?.username && (
+                        <div style={{ position: 'relative' }}>
+                          <button
+                            onClick={() => handleToggleMessInfo(mess.id)}
+                            type="button"
+                            className="chat__btn-mes-menu"
+                          >
+                            <MesMenuIcon />
+                          </button>
+                          {showMessInfo && mess.id === selectedMessageId && (
+                            <MessMenu id={mess.id} text={mess.text} />
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
-                </div>
-                <div className="chat__message_text">{mess.text}</div>
-                <div className="chat__message_date">
-                  {new Date(mess.createdAt).getTime() !== new Date(mess.updatedAt).getTime() && (
-                    <span style={{ marginRight: '5px' }}>изменено</span>
-                  )}
-                  <span>{String(transformDate(mess.createdAt))}</span>
-                </div>
-              </div>
-            )
-          )}
+                    <div className="chat__message_text">{mess.text}</div>
+                    <div className="chat__message_date">
+                      {new Date(mess.createdAt).getTime() !==
+                        new Date(mess.updatedAt).getTime() && <span>изменено</span>}
+                      <span>{String(transformDate(mess.createdAt))}</span>
+                    </div>
+                  </div>
+                );
+            }
+          })}
         </InfiniteScroll>
       </div>
 
@@ -263,7 +263,7 @@ export default function Chat() {
               sendMessage();
             } else if (
               (event.key === 'Enter' && event.shiftKey && textarea.rows < 5) ||
-              (textarea.scrollHeight / 21 > textarea.rows && textarea.rows < 5) // 21 this textarea height 1 row
+              (textarea.scrollHeight / 21 > textarea.rows && textarea.rows < 5)
             ) {
               textarea.rows += 1;
               textarea.style.height = `${textarea.offsetHeight + 21}px`;
@@ -271,7 +271,11 @@ export default function Chat() {
           }}
         />
 
-        <button onClick={handleTogglePicker} type="button" className="chat__btn-emoji">
+        <button
+          onClick={() => setShowPicker(!showPicker)}
+          type="button"
+          className="chat__btn-emoji"
+        >
           😀
         </button>
 
