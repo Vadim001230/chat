@@ -1,13 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { ReactNode } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, FieldValues } from 'react-hook-form';
 import { useRegistrationMutation } from '../redux/authApi';
 import { ReactComponent as ErrorIcon } from '../UI/icons/error.svg';
 import Preloader from '../UI/preloader/Preloader';
+import '../index.scss';
 
 export default function RegistrationPage() {
   const [signup, { isLoading, isError, error }] = useRegistrationMutation();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -18,7 +20,7 @@ export default function RegistrationPage() {
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const { username, password } = data;
     await signup({ username, password }).unwrap();
-    if (!isError) <Navigate to="/login" />;
+    if (!isError) navigate('/login');
   };
 
   return (

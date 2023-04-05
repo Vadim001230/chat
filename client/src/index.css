@@ -101,7 +101,7 @@ h1, button, input {
 }
 
 .chat__btn-settings .settings-icon, .ok-icon,
-.chat__btn-mes-menu svg {
+.chat__btn-mes-menu .menu-icon {
   stroke: var(--date);
   width: 27px;
   transition: stroke .2s;
@@ -111,7 +111,7 @@ h1, button, input {
 }
 
 .chat__btn-settings:hover .settings-icon,
-.chat__btn-mes-menu:hover svg {
+.chat__btn-mes-menu:hover .menu-icon {
   stroke: var(--thumb);
 }
 .cancel-icon:hover,
@@ -135,17 +135,20 @@ h1, button, input {
   flex-direction: column-reverse;
 }
 .chat__messages::-webkit-scrollbar,
-.users__modal-container::-webkit-scrollbar {
+.chat__textarea::-webkit-scrollbar,
+.users__modal-users::-webkit-scrollbar {
   width: 4px; /* ширина всей полосы прокрутки */
 }
 
 .chat__messages::-webkit-scrollbar-track,
-.users__modal-container::-webkit-scrollbar-track {
+.chat__textarea::-webkit-scrollbar-track,
+.users__modal-users::-webkit-scrollbar-track {
   background: transparent; /* цвет зоны отслеживания */
 }
 
 .chat__messages::-webkit-scrollbar-thumb,
-.users__modal-container::-webkit-scrollbar-thumb {
+.chat__textarea::-webkit-scrollbar-thumb,
+.users__modal-users::-webkit-scrollbar-thumb {
   background-color: var(--input); /* цвет бегунка */
   border-radius: 30px; /* округлось бегунка */
 }
@@ -328,9 +331,15 @@ h1, button, input {
 .users__modal-container {
   border-radius: 0.5rem;
   background-color: var(--white);
-  overflow-y: auto;
   padding: 1rem;
   max-height: 80vh;
+}
+
+.users__modal-users {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 70vh;
 }
 
 .users__modal-user {
@@ -352,9 +361,7 @@ h1, button, input {
 
 .users__modal-btn {
   margin-left: auto;
-  margin-top: -0.2rem;
 }
-
 .chat__form {
   display: flex;
   flex-wrap: nowrap;
@@ -373,17 +380,6 @@ h1, button, input {
   resize: none;
   font-family: inherit;
   height: 21px;
-}
-
-.chat__textarea::-webkit-scrollbar {
-  width: 3px; /* ширина всей полосы прокрутки */
-}
-.chat__textarea::-webkit-scrollbar-track {
-  background: transparent; /* цвет зоны отслеживания */
-}
-.chat__textarea::-webkit-scrollbar-thumb {
-  background-color: var(--thumb); /* цвет бегунка */
-  border-radius: 30px; /* округлось бегунка */
 }
 
 .chat__form:focus-within,
@@ -523,7 +519,7 @@ h1, button, input {
 
   .update__modal-container,
   .users__modal-container {
-  width: 70%;
+    width: 70%;
   }
 }
 
