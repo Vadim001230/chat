@@ -44,7 +44,6 @@ export default function Chat() {
 
   useEffect(() => {
     textareaFocus.current?.focus();
-    localStorage.setItem('isConnected', 'true');
   });
 
   useEffect(() => {
@@ -87,6 +86,7 @@ export default function Chat() {
       if (socket.current && !connected) {
         socket.current.send(JSON.stringify(message));
         setConnected(true);
+        localStorage.setItem('isConnected', 'true');
       }
     };
 
@@ -124,7 +124,6 @@ export default function Chat() {
     };
     if (socket.current) {
       setConnected(false);
-      localStorage.removeItem('isConnected');
       socket.current.send(JSON.stringify(message));
       socket.current.close();
       logOut();

@@ -17,12 +17,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const value = useMemo(() => {
     const logIn = (userData: IUser, cb: () => void) => {
       localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('isConnected', '');
       setUser(userData);
       cb();
     };
 
     const logOut = () => {
       localStorage.removeItem('user');
+      localStorage.removeItem('isConnected');
       setUser(null);
       navigate('/login');
     };
