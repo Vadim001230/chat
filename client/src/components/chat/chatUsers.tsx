@@ -4,7 +4,7 @@ import { useGetUsersQuery } from '../../redux/authApi';
 import useAuth from '../../hoc/useAuth';
 import Spiner from '../../UI/spiner/spiner';
 import IUser from '../../types/IUser';
-import transformDate from '../../utils/transformDate';
+import transformJoinedDate from '../../utils/transformJoinedDate';
 import { ReactComponent as CancelIcon } from '../../UI/icons/cancel.svg';
 
 export default function ChatUsers() {
@@ -43,7 +43,7 @@ export default function ChatUsers() {
                 return (
                   <div className="users__modal-user" key={user.id}>
                     <span>{user.username}</span>
-                    <span>Присоединился: {String(transformDate(user.createdAt))}</span>
+                    <span>Присоединился: {String(transformJoinedDate(user.createdAt))}</span>
                   </div>
                 );
               })}

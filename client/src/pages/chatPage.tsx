@@ -124,7 +124,7 @@ export default function Chat() {
     };
     if (socket.current) {
       setConnected(false);
-      localStorage.setItem('isConnected', 'false');
+      localStorage.removeItem('isConnected');
       socket.current.send(JSON.stringify(message));
       socket.current.close();
       logOut();
