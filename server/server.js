@@ -1,10 +1,22 @@
+const express = require('express');
 const ws = require('ws');
 const Sequelize = require('sequelize');
+const sequelize = require('./app/config/db');
 const Message = require('./app/models/message.model');
+const messageRouter = require('./app/routes/message.routes')
+const cors = require('cors');
 
-const wss = new ws.Server({ port: 5000 }, () => console.log('Server started on 5000'));
+const PORT = process.env.PORT || 5000;
+const app = express();
 
-const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/chat_postgres');
+app.use(cors());
+app.use(express.json());
+app.use('/api', messageRouter);
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+
+const wss = new ws.Server({ port: 5001 }, () => console.log('WebSocket server started on 5001'));
+
 const initMessage = Message(sequelize, Sequelize);
 
 sequelize.sync()
@@ -29,11 +41,25 @@ async function broadcastMessage(message) {
   });
 }
 
+// async broadcastMessage(message) {
+//   const { event, username, text } = message;
+//   try {
+//     const savedMessage = await this.createMessage({ body: { event, username, text } });
+//     this.wss.clients.forEach(client => {
+//       if (client.readyState === ws.OPEN) {
+//         client.send(JSON.stringify(savedMessage));
+//       }
+//     });
+//   } catch (error) {
+//     console.error(`Error creating message: ${error}`);
+//   }
+// }
+
 wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     try {
-      message = JSON.parse(message);
-      await broadcastMessage(message, ws);
+      const messageParse = JSON.parse(message);
+      await broadcastMessage(messageParse);
     } catch (error) {
       console.error(`Error parsing message: ${error}`);
     }
@@ -55,28 +81,3 @@ process.on('SIGTERM', () => {
     });
   });
 });
-
-
-// wss.on('connection', async (ws) => {
-//   try {
-//     const messages = await initMessage.findAll({ order: [['createdAt', 'ASC']] });
-//     messages.forEach((message) => {
-//       ws.send(JSON.stringify(message));
-//     });
-//   } catch (error) {
-//     console.error(`Error retrieving messages from database: ${error}`);
-//   }
-
-//   ws.on('message', async (message) => {
-//     try {
-//       message = JSON.parse(message);
-//       await broadcastMessage(message, ws);
-//     } catch (error) {
-//       console.error(`Error parsing message: ${error}`);
-//     }
-//   });
-
-//   ws.on('close', () => {
-//     console.log('Connection closed');
-//   });
-// });
