@@ -1,5 +1,5 @@
 import { ReactComponent as Loader } from '../icons/loader.svg';
-import './preloader.css';
+import './preloader.scss';
 
 const Preloader = () => {
   return (

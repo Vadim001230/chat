@@ -6,19 +6,20 @@ import useAuth from '../hoc/useAuth';
 import { useGetMessagesQuery } from '../redux/messageApi';
 import { ReactComponent as SettingsIcon } from '../UI/icons/settings.svg';
 import { ReactComponent as SendIcon } from '../UI/icons/sendIcon.svg';
-import { ReactComponent as MesMenuIcon } from '../UI/icons/MesMenuIcon.svg';
+import { ReactComponent as MesMenuIcon } from '../UI/icons/mesMenuIcon.svg';
 import Spiner from '../UI/spiner/spiner';
 import IMessage from '../types/IMessage';
 import transformDate from '../utils/transformDate';
 import MessMenu from '../components/chat/messMenu';
 import ChatSettings from '../components/chat/chatSettings';
 import ChatUsers from '../components/chat/chatUsers';
-import '../index.css';
+import '../index.scss';
 
 export default function Chat() {
   const socket = useRef<WebSocket | undefined>();
   const { user, logOut } = useAuth();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  const [connected, setConnected] = useState(localStorage.getItem('isConnected') || false);
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [value, setValue] = useState('');
   const [notEmptyMessage, setNotEmptyMessage] = useState(false);
@@ -29,6 +30,7 @@ export default function Chat() {
   const textareaFocus = useRef<HTMLTextAreaElement>(null);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
+  const clickCountRef = useRef(0);
 
   const {
     data: messData,
@@ -42,22 +44,13 @@ export default function Chat() {
 
   useEffect(() => {
     textareaFocus.current?.focus();
-  }, []);
-
-  const loadMoreMessages = () => {
-    setLimit((prev) => prev + 20); // to do сделать через offset
-  };
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-  };
-
-  const clickCountRef = useRef(0);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       clickCountRef.current += 1;
@@ -90,8 +83,10 @@ export default function Chat() {
         event: 'connection',
         username: user?.username,
       };
-      if (socket.current) {
+      if (socket.current && !connected) {
         socket.current.send(JSON.stringify(message));
+        setConnected(true);
+        localStorage.setItem('isConnected', 'true');
       }
     };
 
@@ -113,15 +108,13 @@ export default function Chat() {
     socket.current.onerror = () => {
       socket.current = undefined;
     };
-  }, [setLimit, setShowMessInfo, setMessages, user]);
+  }, [user, connected]);
 
   useEffect(() => {
     if (!socket.current) connect();
   });
   useEffect(() => {
-    if (messData) {
-      setMessages(messData.messages);
-    }
+    if (messData) setMessages(messData.messages);
   }, [connect, messData]);
 
   function disconnect() {
@@ -130,6 +123,7 @@ export default function Chat() {
       username: user?.username,
     };
     if (socket.current) {
+      setConnected(false);
       socket.current.send(JSON.stringify(message));
       socket.current.close();
       logOut();
@@ -152,6 +146,12 @@ export default function Chat() {
     }
   }
 
+  const loadMoreMessages = () => {
+    setLimit((prev) => prev + 20);
+  };
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
   const handleEmojiSelect = (emoji: { native: string }) => {
     setValue(value + emoji.native);
     setNotEmptyMessage(true);
@@ -222,7 +222,7 @@ export default function Chat() {
                           <button
                             onClick={() => handleToggleMessInfo(mess.id)}
                             type="button"
-                            className="chat__btn-mes-menu"
+                            className="chat__btn-menu"
                           >
                             <MesMenuIcon />
                           </button>
@@ -285,9 +285,7 @@ export default function Chat() {
 
         <button className="chat__btn-submit" type="button" onClick={sendMessage}>
           <SendIcon
-            style={
-              notEmptyMessage ? { stroke: '#1D9BF0', strokeWidth: '2' } : { stroke: '#9ea1a1' }
-            }
+            className={notEmptyMessage ? 'chat__btn-submit_active' : 'chat__btn-submit_disabled'}
           />
         </button>
       </form>

@@ -6,6 +6,7 @@ import { useSigninMutation } from '../redux/authApi';
 import useAuth from '../hoc/useAuth';
 import { ReactComponent as ErrorIcon } from '../UI/icons/error.svg';
 import Preloader from '../UI/preloader/Preloader';
+import '../index.scss';
 
 export default function LoginPage() {
   const [signin, { data: userData, isLoading, isError, error }] = useSigninMutation();
