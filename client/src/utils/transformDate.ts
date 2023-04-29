@@ -20,7 +20,9 @@ export default function transformDate(str: string) {
   let min = date.getMinutes().toString();
   min = +min < 10 ? `0${min}` : `${min}`;
 
-  return hour <= 24
-    ? `${hour}:${min}`
-    : `${hour}:${min} • ${months[month]} ${day}`;
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const diffInHours = diff / (1000 * 60 * 60);
+
+  return diffInHours > 24 ? `${hour}:${min} • ${months[month]} ${day}` : `${hour}:${min}`;
 }
