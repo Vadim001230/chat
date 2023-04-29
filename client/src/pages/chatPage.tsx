@@ -222,7 +222,7 @@ export default function Chat() {
                           <button
                             onClick={() => handleToggleMessInfo(mess.id)}
                             type="button"
-                            className="chat__btn-mes-menu"
+                            className="chat__btn-menu"
                           >
                             <MesMenuIcon />
                           </button>
@@ -285,9 +285,7 @@ export default function Chat() {
 
         <button className="chat__btn-submit" type="button" onClick={sendMessage}>
           <SendIcon
-            style={
-              notEmptyMessage ? { stroke: 'var(--thumb)', strokeWidth: '2' } : { stroke: '#9ea1a1' }
-            }
+            className={notEmptyMessage ? 'chat__btn-submit_active' : 'chat__btn-submit_disabled'}
           />
         </button>
       </form>

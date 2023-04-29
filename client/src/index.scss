@@ -233,6 +233,17 @@ h1, button, input {
     display: flex;
     justify-content: center;
     align-items: center;
+    &_disabled {
+      stroke: var(--date);
+      width: 21px;
+      height: 21px;
+    }
+    &_active {
+      width: 21px;
+      height: 21px;
+      stroke: var(--thumb);
+      stroke-width: 2;
+    }
   }
 
   &__picker {
@@ -252,7 +263,7 @@ h1, button, input {
 }
 
 .chat__btn-settings,
-.chat__btn-mes-menu,
+.chat__btn-menu,
 .update__modal-btn,
 .users__modal-btn {
   width: 2rem;
@@ -268,18 +279,13 @@ h1, button, input {
   }
 }
 
-.submit-icon {
-  stroke: #9ea1a1;
-  width: 21px;
-  height: 21px;
-}
 .settings-icon, .ok-icon, .menu-icon {
   stroke: var(--date);
   width: 27px;
   transition: stroke .2s;
 }
 .chat__btn-settings:hover .settings-icon,
-.chat__btn-mes-menu:hover .menu-icon {
+.chat__btn-menu:hover .menu-icon {
   stroke: var(--thumb);
 }
 .ok-icon:hover {
