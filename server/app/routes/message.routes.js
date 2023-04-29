@@ -1,9 +1,9 @@
 const Router = require('express');
 const router = new Router;
-const messageController = require('../controller/message.controller');
+const MessageController = require('../controllers/message.controller');
 
-router.get('/messages', messageController.getMessages);
-router.put('/messages', messageController.updateMessage);
-router.delete('/messages/:id', messageController.deleteMessage);
+router.get('/messages', MessageController.getMessages);
+router.put('/messages', MessageController.updateMessage);
+router.delete('/messages/:id', MessageController.deleteMessage);
 
 module.exports = router;

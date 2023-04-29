@@ -1,10 +1,10 @@
-const Message = require('../models/message.model');
+const MessageModel = require('../models/message.model');
 const Sequelize = require('sequelize');
 const sequelize = require('../config/db');
 const ws = require('ws');
 const wss = require('../config/ws');
 
-const initMessage = Message(sequelize, Sequelize);
+const initMessage = MessageModel(sequelize, Sequelize);
 
 class MessageController {
   async getMessages(req, res) {
@@ -53,7 +53,7 @@ class MessageController {
       await message.destroy();
       wss.clients.forEach(client => {
         if (client.readyState === ws.OPEN) {
-          client.send(JSON.stringify({ event: 'delete_message' })); //todo проверка на того кто удалил сообщение
+          client.send(JSON.stringify({ event: 'delete_message' }));
         };
       });
       res.json({ message: 'Message deleted successfully' });
